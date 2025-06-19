@@ -13,10 +13,20 @@
     }
 
     body {
+      margin: 0;
+      padding: 0;
       background: linear-gradient(135deg, #819A91, #A7C1A8, #A7C1A8, #D1D8BE);
       font-family: Arial, sans-serif;
-      padding: 20px;
       transition: background 0.3s, color 0.3s;
+    }
+
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100dvh;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     .dark-mode {
@@ -24,13 +34,18 @@
       color: var(--text-dark);
     }
 
+    .dark-mode .wrapper {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
     .container {
-      max-width: 550px;
-      margin: auto;
+      width: 100%;
+      max-width: 500px;
       background: var(--bg-light);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 30px 20px;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
     .dark-mode .container {
@@ -38,16 +53,19 @@
       color: var(--text-dark);
     }
 
-    h2 {
+    h2, h3, h4 {
       text-align: center;
+      margin-top: 0;
     }
 
     input, button {
       width: 100%;
-      margin-top: 10px;
-      padding: 10px;
+      margin-top: 12px;
+      padding: 12px;
+      font-size: 16px;
       border-radius: 10px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
     button {
@@ -65,12 +83,14 @@
       display: flex;
       justify-content: space-between;
       margin-top: 5px;
+      flex-wrap: wrap;
     }
 
     .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .avatar {
@@ -91,50 +111,95 @@
 
     canvas {
       margin-top: 20px;
+      max-width: 100%;
     }
 
     .hidden {
       display: none;
+    }
+
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 20px 15px;
+        border-radius: 10px;
+        box-shadow: none;
+      }
+
+      input, button {
+        font-size: 16px;
+        padding: 12px;
+      }
+
+      h2, h3, h4 {
+        font-size: 18px;
+        text-align: center;
+      }
+
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .profile {
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .expense-list li {
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
+      }
+
+      button {
+        margin-top: 8px;
+      }
     }
   </style>
 </head>
 <body id="body">
 
   <!-- Login -->
-  <div class="container" id="login-section">
-    <h2>Login</h2>
-    <input type="text" id="login-id" placeholder="Login ID">
-    <input type="password" id="login-pass" placeholder="Password">
-    <button onclick="checkLogin()">Login</button>
-    <p id="login-msg" style="color: red; text-align:center;"></p>
+  <div class="wrapper" id="login-wrapper">
+    <div class="container" id="login-section">
+      <h2>Login</h2>
+      <input type="text" id="login-id" placeholder="Login ID">
+      <input type="password" id="login-pass" placeholder="Password">
+      <button onclick="checkLogin()">Login</button>
+      <p id="login-msg" style="color: red; text-align:center;"></p>
+    </div>
   </div>
 
   <!-- App -->
-  <div class="container hidden" id="app-section">
-    <div class="top-bar">
-      <div class="profile">
-        <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" class="avatar" alt="avatar" />
-        <h3 id="user-display">Welcome</h3>
+  <div class="wrapper hidden" id="app-wrapper">
+    <div class="container" id="app-section">
+      <div class="top-bar">
+        <div class="profile">
+          <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" class="avatar" alt="avatar" />
+          <h3 id="user-display">Welcome</h3>
+        </div>
+        <div id="calendar"></div>
       </div>
-      <div id="calendar"></div>
+
+      <input type="number" id="monthly-budget" placeholder="Enter Monthly Budget">
+      <input type="text" id="item" placeholder="Expense Item">
+      <input type="number" id="amount" placeholder="Amount">
+      <button onclick="addExpense()">Add Expense</button>
+      <button onclick="calculateExpenses()">Calculate</button>
+      <button onclick="resetMonth()">🔄 Reset Month</button>
+
+      <h4>Total: ₹<span id="total">0</span></h4>
+      <h4>Remaining: ₹<span id="remaining">0</span></h4>
+      <h4>Average: ₹<span id="average">0</span></h4>
+
+      <ul id="expense-list" class="expense-list"></ul>
+      <canvas id="expenseChart"></canvas>
+
+      <button onclick="toggleTheme()">🌙/☀️ Mode</button>
+      <button onclick="logout()">Logout</button>
     </div>
-
-    <input type="number" id="monthly-budget" placeholder="Enter Monthly Budget">
-    <input type="text" id="item" placeholder="Expense Item">
-    <input type="number" id="amount" placeholder="Amount">
-    <button onclick="addExpense()">Add Expense</button>
-    <button onclick="calculateExpenses()">Calculate</button>
-    <button onclick="resetMonth()">🔄 Reset Month</button>
-
-    <h4>Total: ₹<span id="total">0</span></h4>
-    <h4>Remaining: ₹<span id="remaining">0</span></h4>
-    <h4>Average: ₹<span id="average">0</span></h4>
-
-    <ul id="expense-list" class="expense-list"></ul>
-    <canvas id="expenseChart"></canvas>
-
-    <button onclick="toggleTheme()">🌙/☀️ Mode</button>
-    <button onclick="logout()">Logout</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -158,8 +223,8 @@
 
       if (users[id] && users[id] === pass) {
         currentUser = id;
-        document.getElementById("login-section").classList.add("hidden");
-        document.getElementById("app-section").classList.remove("hidden");
+        document.getElementById("login-wrapper").classList.add("hidden");
+        document.getElementById("app-wrapper").classList.remove("hidden");
         document.getElementById("user-display").textContent = `Welcome ${id === "Anant" ? "Anant's family" : id}`;
         speak(`Welcome ${id === "Anant" ? "Anant's family" : id}`);
         showCalendar();
@@ -282,7 +347,6 @@
       if (lastChecked) {
         const lastDate = new Date(parseInt(lastChecked));
         if (lastDate.getMonth() !== currentMonth) {
-          // New month
           localStorage.removeItem(getKey("expenses"));
           localStorage.removeItem(getKey("budget"));
         }
